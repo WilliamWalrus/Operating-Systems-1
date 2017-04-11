@@ -8,32 +8,52 @@ unsigned int nthreads = 5;
 
 int load_grid(int grid[][SIZE], char *filename);
 int grid[9][9];
+int nextRow;
+int nextCol;
+int nextReg;
 
-void checkCellLine(unsigned cell) {
-	
-	uint8_t row = (cell - 1) / (SIZE);
-	uint8_t col = (cell - 1) % SIZE;
-	uint8_t lineLimit = SIZE - col - 1;
-	uint8_t n = grid[row][col];
-	
-	printf("N: %d - Limite: %d\n", grid[row][col], lineLimit);
-	
-	//for(uint8_t i = cell; i <= limiteLine; i++) printf("%d", grid[][]); 
+void checkRow(int row) {
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = i + 1; j < SIZE; j++) {
+			if (grid[row][i] == grid[row][j]) printf("Erro na linha %d!\n", row + 1);
+		}
+	}
 }
 
-void checkCellColumn(unsigned cell){}
-
-void checkCell(unsigned cell) {
-		
+void checkCol(int col) {
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = i + 1; j < SIZE; j++) {
+			if (grid[i][col] == grid[j][col]) printf("Erro na coluna %d!\n", col + 1);
+		}
+	}
 }
-void *checkAll(void *arg) {
+
+void checkReg(int reg) {
+	int rowBase = (reg / 3) * 3;
+	int rowLimit = ((reg + 3)/ 3) * 3;
+	int colBase = (reg % 3) * 3;
+	int colLimit = ((reg % 3) + 1) * 3;
+	int regVector[SIZE]; 
+	int k = -1;
 	
+	for (int i = rowBase; i < rowLimit; i++) {
+		for (int j = colBase; j < colLimit; j++) {
+			regVector[++k] = grid[i][j];
+		}
+	}
+	
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = i + 1; j < SIZE; j++) {
+			if (regVector[i] == regVector[j]) printf("Erro na região %d!\n", reg + 1);
+		}
+	}
 }
 
 int main() {
-	
 	load_grid(grid, "input_grid_errado.txt");
-	for(int i = 1; i < 82; i++) checkCellLine(i);
+	for(int i = 0; i < SIZE; i++) checkRow(i);
+	for(int i = 0; i < SIZE; i++) checkCol(i);
+	for(int i = 0; i < SIZE; i++) checkReg(i);
 	return 0;
 }
 
