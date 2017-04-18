@@ -89,38 +89,44 @@ void *check(void* arg) {
 		pthread_mutex_lock(&mutexCol);
 		if (nextCol > 8) {
 			pthread_mutex_unlock(&mutexCol);
-			break;
+		} else {
+			int col = nextCol;
+			nextCol++;
+			pthread_mutex_unlock(&mutexCol);
+			checkCol(col);
 		}
-		int col = nextCol;
-		nextCol++;
-		pthread_mutex_unlock(&mutexCol);
 		
-		checkCol(col);
-	}
-	while (true) {
 		pthread_mutex_lock(&mutexRow);
 		if (nextRow > 8) {
 			pthread_mutex_unlock(&mutexRow);
-			break;
+		} else {
+			int row = nextRow;
+			nextRow++;
+			pthread_mutex_unlock(&mutexRow);
+			checkRow(row);
 		}
-		int row = nextRow;
-		nextRow++;
-		pthread_mutex_unlock(&mutexRow);
-		
-		checkRow(row);
-	}
-	while (true) {
+
 		pthread_mutex_lock(&mutexReg);
 		if (nextReg > 8) {
 			pthread_mutex_unlock(&mutexReg);
-			break;
+		} else {
+			int reg = nextReg;
+			nextReg++;
+			pthread_mutex_unlock(&mutexReg);
+			checkReg(reg);
 		}
-		int reg = nextReg;
-		nextReg++;
-		pthread_mutex_unlock(&mutexReg);
 		
-		checkReg(reg);
+		pthread_mutex_lock(&mutexCol);
+		pthread_mutex_lock(&mutexRow);
+		pthread_mutex_lock(&mutexReg);
+		if (nextCol > 8 && nextRow > 8 && nextReg > 8) break;
+		pthread_mutex_unlock(&mutexCol);
+		pthread_mutex_unlock(&mutexRow);
+		pthread_mutex_unlock(&mutexReg);
 	}
+	pthread_mutex_unlock(&mutexCol);
+	pthread_mutex_unlock(&mutexRow);
+	pthread_mutex_unlock(&mutexReg);
 	return NULL;
 }
 
